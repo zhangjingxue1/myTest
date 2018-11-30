@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" href="/plugins/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/plugins/adminLTE/css/AdminLTE.css"/>
+    <link rel="stylesheet" href="/plugins/adminLTE/css/skins/_all-skins.min.css"/>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <script src="/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!--angularJS-->
+    <script src="/plugins/angularjs/angular.min.js"></script>
+    <!--引入分页-->
+    <script src="/plugins/angularjs/pagination.js"></script>
+    <link rel="stylesheet" href="/plugins/angularjs/pagination.css">
+
+    <!--引入js代码-->
+    <script src="/js/base-pagination.js"></script>
+    <script src="/js/service/baseService.js"></script>
+    <script src="/js/controller/baseController.js"></script>
+    <script src="/js/controller/goodsController.js"></script>
+</head>
+
+<body class="hold-transition skin-red sidebar-mini"
+      ng-app="pinyougou"
+      ng-controller="goodsController">
+<!-- .box-body -->
+<div class="box-header with-border">
+    <h3 class="box-title">商品管理</h3>
+</div>
+
+<div class="box-body">
+    <!-- 数据表格 -->
+    <div class="table-box">
+        <!--工具栏-->
+        <div class="pull-left">
+            <div class="form-group form-inline">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" title="新建">
+                        <i class="fa fa-file-o"></i> 新建
+                    </button>
+                    <button type="button" class="btn btn-default" title="删除">
+                        <i class="fa fa-trash-o"></i> 删除
+                    </button>
+                    <button type="button" class="btn btn-default" title="上架"
+                            ng-click="upMarketable('1')">
+                        <i class="fa fa-check"></i> 上架
+                    </button>
+                    <button type="button" class="btn btn-default" title="下架"
+                            ng-click="upMarketable('0')">
+                        <i class="fa fa-ban"></i> 下架
+                    </button>
+                    <button type="button" class="btn btn-default" title="刷新"
+                            onclick="window.location.reload();">
+                        <i class="fa fa-refresh"></i> 刷新
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="box-tools pull-right">
+            <div class="has-feedback">
+                状态：<select ng-model="searchEntity.auditStatus">
+                <option value="">全部</option>
+                <option value="0">未审核</option>
+                <option value="1">已审核</option>
+                <option value="2">审核未通过</option>
+                <option value="3">关闭</option>
+            </select> 商品名称：<input ng-model="searchEntity.goodsName">
+                <button class="btn btn-default" ng-click="reload();">查询</button>
+            </div>
+        </div>
+        <!--工具栏/-->
+        <!--数据列表-->
+        <table id="dataList"
+               class="table table-bordered table-striped table-hover dataTable">
+            <thead>
+            <tr>
+                <th class="" style="padding-right: 0px"><input id="selall" type="checkbox"
+                                                               class="icheckbox_square-blue"></th>
+                <th class="sorting_asc">商品ID</th>
+                <th class="sorting">商品名称</th>
+                <th class="sorting">商品价格</th>
+                <th class="sorting">一级分类</th>
+                <th class="sorting">二级分类</th>
+                <th class="sorting">三级分类</th>
+                <th class="sorting">状态</th>
+                <th class="sorting">是否上架</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--
+            这里有点问题
+            1.因为页面显示不好,有些已经未审核的也显示了,
+            所以多加一个功能在点击的的时候就在页面拿到id去获取状态,
+            如果状态可以才加入数组否则提示用户取消勾选
+            2.还有就是未审核状态的商品点击上架也没提示问题bug
+            3.关闭的商品没显示(不清楚他表的设置了)
+            -->
+            <tr ng-repeat="entity in dataList">
+                <td><input type="checkbox"
+                           ng-click="updateSelection($event,entity.id)"></td>
+                <td>{{entity.id}}</td>
+                <td>{{entity.goodsName}}</td>
+                <td>{{entity.price}}</td>
+                <td>{{entity.category1Name}}</td>
+                <td>{{entity.category2Name}}</td>
+                <td>{{entity.category3Name}}</td>
+                <td>{{status[entity.auditStatus]}}</td>
+                <td>{{entity.isMarketable=='1'?'是':'否'}}</td>
+
+                <!--
+                没做修改.前端修改选项卡都没有改成是否上架的状态好了
+                <td class="text-center">
+                     <button type="button" class="btn bg-olive btn-xs">修改</button>
+                 </td>-->
+            </tr>
+            </tbody>
+        </table>
+        <!--数据列表/-->
+
+        <!--分页命令-->
+        <tm-pagination conf="paginationConf"></tm-pagination>
+
+    </div>
+    <!-- 数据表格 /-->
+</div>
+<!-- /.box-body -->
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pinyougou.mapper.TypeTemplateMapper">
+    <!--多条件查询模版-->
+    <select id="findAll" resultType="TypeTemplate">
+        select * from tb_type_template
+        <where>
+            <!-- 模版名称 -->
+            <if test="name!=null and name!=''">
+                name LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+        order by id asc
+    </select>
+</mapper>

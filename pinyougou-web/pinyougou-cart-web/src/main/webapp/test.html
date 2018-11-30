@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="testMo">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <style>
+        .div1{
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="testCtrl" class="div1">
+    <h4>angularJS--购物车实现全选/取消全选</h4>
+    <button type="button" class="btn btn-info" ng-click="addProduct()">添加商品</button>
+    <button type="button" class="btn btn-danger" ng-click="deleteProduct()">删除商品</button>
+    <br><br>
+    <table class="table table-bordered table-responsive" >
+        <thead>
+        <td>操作</td>
+        <td>check状态</td>
+        <td>商品名称</td>
+        <td>单价</td>
+        <td>数量</td>
+        <td>小计</td>
+        </thead>
+        <tr ng-repeat="p in cart" >
+            <td><input type="checkbox"  ng-checked="p.checked"  ng-click="echoChange(p.id,p.checked,selectAll)"></td>
+            <td>{{p.checked}}||{{p.checked}}</td>
+            <td>{{p.name}}</td>
+            <td>单价：￥{{p.price}}</td>
+            <td>数量：<input type="number"  ng-model="p.count"  min="0" value="p.count"></td>
+            <td>小计：￥{{p.sum}}</td>
+        </tr>
+    </table>
+    <br>
+    <input type="checkbox" ng-model="selectAll"  ng-click="selectAllClick(selectAll)"><span ng-hide="selectAll" >全选</span><span ng-show="selectAll">取消全选</span>
+    <br><br>
+    已选择<span>{{jishuqi}}</span>件商品，总金额：<span>￥{{ sumTotal }}</span>
+
+</div>
+<script src="/plugins/angularjs/angular.min.js"></script>
+<script>
+    angular.module('testMo',['ng']).controller('testCtrl',function($scope){
+//       $scope.p1=new Object();
+//        $scope.p1.price=10;
+//        $scope.p1.count=1;
+        //购物车应该是一个数组
+        $scope.selectAll=false;//全选默认为false
+        $scope.cart=[{id:0,name:'商品0',price:10,count:5,sum:10,checked:false}];
+        $scope.addProduct= function (){
+            var p=new Object();
+            p.id=$scope.cart.length;
+            p.name='商品'+ p.id
+            p.price=Math.floor(Math.random()*100);//对数值向下取整
+            p.count=1;
+            p.sum= p.price* p.count;
+            p.checked=false;
+            $scope.cart.push({id: p.id,name: p.name,price:p.price,count: p.count,sum: p.sum,checked: p.checked});
+            console.log($scope.cart);
+        };
+        //删除商品
+        $scope.deleteProduct= function (){
+            $scope.cart.pop();//删除数组中的最后的一个元素，并且返回这个元素，会改变数组里的元素
+        };
+
+        //全选按钮check的点击事件
+        $scope.selectAllClick= function (sa) {
+            for(var i=0;i<$scope.cart.length;i++){
+                $scope.cart[i].checked=sa;
+            }
+        };
+        //单个数据的check事件
+        $scope.echoChange=function(id,ch,se){
+            $scope.cart[id].checked=!ch;
+            //当所有都选中时，全选也要被勾选
+            var cc=0;//计算当前数组中checked为真的数目
+            for(var i=0;i<$scope.cart.length;i++){
+//                if($scope.cart[i].checked==true){
+//                    cc++;
+//                }
+                $scope.cart[i].checked?cc++:cc;
+            }
+            $scope.selectAll=(cc==$scope.cart.length);//当为真的数目=数组长度时，证明全部勾选
+//            console.log($scope.selectAll);
+        }
+        //监控数据
+        $scope.$watch('cart',function(newValue,oldValue,scope){
+            $scope.sumTotal=0; //总计
+            $scope.jishuqi=0; //计数器
+            for(var i in newValue) {
+                var sumN = newValue[i].count * newValue[i].price; //计算出新的结果
+                $scope.cart[i].sum = sumN.toFixed(2); //保留两位小数并且把它赋值给元数据;
+                if (newValue[i].checked) {
+                    $scope.sumTotal += sumN;
+                    $scope.jishuqi++;
+//                        console.log($scope.sumTotal);
+//                        console.log($scope.jishuqi);
+                }
+            }
+        },true);
+        /*$watch简介:在digest执行时，如果watch观察的的value与上一次执行时不一样时，就会被触发。
+         AngularJS内部的watch实现了页面随model的及时更新。
+         $watch方法在用的时候主要是手动的监听一个对象，但对象发生变化时触发某个事件。
+         $watch(watchFn,watchAction,deepWatch);
+         如果不加第三个参数，那么只会监听cart数组，只有当cart引用改变时才会触发,因此当需要监听一些引用对象时需要把第三个参数设置成true。
+         */
+    });
+</script>
+</body>
+</html>
